@@ -1,0 +1,44 @@
+name: workout-tracker-prod
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: workout_tracker
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-workout_tracker_dev}
+      POSTGRES_DB: workout_tracker
+    volumes:
+      - prod_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U workout_tracker -d workout_tracker']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: .
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://workout_tracker:${POSTGRES_PASSWORD:-workout_tracker_dev}@db:5432/workout_tracker
+      WEB_DIST_DIR: /app/web
+    ports:
+      - '127.0.0.1:8080:3000'
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  prod_pgdata:

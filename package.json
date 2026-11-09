@@ -1,0 +1,20 @@
+{
+  "name": "workout-tracker",
+  "private": true,
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=24.0.0 <25.0.0",
+    "pnpm": ">=12.0.0 <13.0.0"
+  },
+  "scripts": {
+    "dev:db": "docker compose up -d db",
+    "dev:api": "pnpm --filter @workout-tracker/api dev",
+    "dev:web": "pnpm --filter @workout-tracker/web dev",
+    "db:migrate": "pnpm --filter @workout-tracker/api db:migrate",
+    "db:generate": "pnpm --filter @workout-tracker/api db:generate",
+    "typecheck": "pnpm --filter @workout-tracker/api typecheck && pnpm --filter @workout-tracker/web typecheck",
+    "test": "pnpm --filter @workout-tracker/api test && pnpm --filter @workout-tracker/web test",
+    "build": "pnpm --filter @workout-tracker/api build && pnpm --filter @workout-tracker/web build",
+    "check": "pnpm typecheck && pnpm test && pnpm build"
+  }
+}

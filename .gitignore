@@ -1,0 +1,16 @@
+/.planning/
+
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+.vite/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Tooling and OS noise
+*.log
+.DS_Store
