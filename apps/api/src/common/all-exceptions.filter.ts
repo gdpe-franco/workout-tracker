@@ -13,6 +13,22 @@ function describe(exception: unknown): string {
     : 'Unknown error'
 }
 
+function clientMessage(exception: HttpException): string {
+  const response = exception.getResponse()
+  if (typeof response === 'string') return response
+  if (Array.isArray(response) && response.every((message) => typeof message === 'string')) {
+    return response.join('; ')
+  }
+  if (typeof response === 'object' && response !== null && 'message' in response) {
+    const message = response.message
+    if (typeof message === 'string') return message
+    if (Array.isArray(message) && message.every((item) => typeof item === 'string')) {
+      return message.join('; ')
+    }
+  }
+  return exception.message
+}
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name)
@@ -36,7 +52,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         return
       }
 
-      response.status(status).json({ code: 'HTTP_ERROR', message: exception.message })
+      response.status(status).json({ code: 'HTTP_ERROR', message: clientMessage(exception) })
       return
     }
 

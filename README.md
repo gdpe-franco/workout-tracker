@@ -42,7 +42,7 @@ pnpm build
 pnpm check     # typecheck, tests and build
 ```
 
-API integration tests use `TEST_DATABASE_URL`, defaulting to the local `workout_tracker_test` database. The Compose init script creates it on first database initialization. If your volume predates the script, create it once:
+API integration tests use `TEST_DATABASE_URL`, defaulting to the local `workout_tracker_test` database. Overrides must target a dedicated test database whose name ends in `_test`. The Compose init script creates the default on first database initialization. If your volume predates the script, create it once:
 
 ```sh
 docker compose exec db psql -U workout_tracker -d postgres -c 'CREATE DATABASE workout_tracker_test;'
